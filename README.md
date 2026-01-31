@@ -1,6 +1,5 @@
-# AI Chatbot Project
-
-This is an intelligent chatbot application built with Python, Flask, and machine learning technologies. The chatbot is designed to understand user intents, process natural language, and provide relevant responses.
+# chatbot-UniBot
+🤖 **AI-powered chatbot** built with **Python & Flask**, using **NLP and machine learning** for intent recognition and contextual responses 💬. Includes conversation history 📊, an admin dashboard 🛠️, and a modular backend with **SQLite & SQLAlchemy** ⚙️.
 
 ## Project Structure
 
