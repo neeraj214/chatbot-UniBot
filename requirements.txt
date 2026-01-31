@@ -1,0 +1,10 @@
+flask
+flask-sqlalchemy
+nltk
+scikit-learn
+numpy
+pandas
+spacy
+python-dotenv
+requests
+PyJWT

@@ -1,0 +1,50 @@
+/* Theme variables for light and dark mode */
+:root {
+  /* Light theme (default) */
+  --background: #F9FAFB;
+  --card-background: #FFFFFF;
+  --text-primary: #000000;
+  --text-secondary: #6B7280;
+  --accent-primary: #7F8CFF;
+  --accent-secondary: #00CFFF;
+  --accent-tertiary: #B784FF;
+  --border-color: rgba(127, 140, 255, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --gradient-start: #00CFFF;
+  --gradient-end: #B784FF;
+  --container-text: #000000; /* Text color for containers in light mode */
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --background: #121212;
+  --card-background: #1E1E1E;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0AEC0;
+  --accent-primary: #7F8CFF;
+  --accent-secondary: #00CFFF;
+  --accent-tertiary: #B784FF;
+  --border-color: rgba(127, 140, 255, 0.3);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --gradient-start: #00CFFF;
+  --gradient-end: #B784FF;
+  --container-text: #FFFFFF; /* Text color for containers in dark mode */
+}
+
+/* Apply theme variables to elements */
+body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode support for Tailwind */
+.dark body {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+/* Transition for smooth theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
