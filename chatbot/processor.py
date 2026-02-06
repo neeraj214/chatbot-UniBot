@@ -34,7 +34,8 @@ class ChatProcessor:
             processed_message = preprocess_text(user_message)
             
             # Determine the intent of the message
-            intent = self.intent_handler.detect_intent(processed_message)
+            # Modified to pass user_id for context-aware resolution
+            intent = self.intent_handler.detect_intent(processed_message, user_id)
             self.logger.info(f"Detected intent: {intent}")
             
             # Generate a response based on the intent
@@ -46,6 +47,10 @@ class ChatProcessor:
             
             bot_response = self.response_generator.generate_response(intent, context)
             
+            # Update Short-term Context Memory (Task 3)
+            if user_id and hasattr(self.intent_handler, 'context_manager'):
+                 self.intent_handler.context_manager.update_context(user_id, user_message, intent, bot_response)
+
             # Save the conversation to the database if user_id is provided
             if user_id:
                 self._save_conversation(user_id, user_message, bot_response, conversation_id)
