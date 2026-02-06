@@ -1,199 +1,140 @@
+import logging
 import json
 import os
 import random
-import re
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-
-# Import database handlers
-from database.db_handler import get_db_session, get_intent_patterns
-from database.models import Intent, Pattern
-from utils.logger import setup_logger
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from chatbot.ml_intent_classifier import MLIntentClassifier
+from chatbot.context_manager import ContextManager
 from config import Config
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 class IntentHandler:
     def __init__(self):
-        self.lemmatizer = WordNetLemmatizer()
-        self.intents = {}
-        self.words = []
-        self.classes = []
-        self.documents = []
-        self.ignore_words = ['?', '!', '.', ',', ';', ':']
-        self.logger = setup_logger(__name__, Config.LOG_LEVEL, Config.LOG_FILE)
-        self.load_intents()
-    
-    def load_intents(self):
-        """Load intents from the database"""
-        db_session = None
-        try:
-            # Get all intents from the database
-            db_session = get_db_session()
-            if not db_session:
-                raise Exception("Failed to create database session")
-                
-            intents = db_session.query(Intent).all()
-            
-            for intent in intents:
-                # Get patterns for this intent
-                patterns = get_intent_patterns(intent.id)
-                pattern_texts = [pattern.text for pattern in patterns]
-                
-                # Add to our intents dictionary
-                self.intents[intent.name] = pattern_texts
-                self.classes.append(intent.name)
-                
-                # Add each pattern to our documents list
-                for pattern in pattern_texts:
-                    # Tokenize each word in the pattern
-                    w = word_tokenize(pattern.lower())
-                    # Add to our words list
-                    self.words.extend(w)
-                    # Add to our documents list
-                    self.documents.append((w, intent.name))
-            
-            # Lemmatize and remove duplicates
-            self.words = [self.lemmatizer.lemmatize(w.lower()) for w in self.words if w not in self.ignore_words]
-            self.words = sorted(list(set(self.words)))
-            
-        except Exception as e:
-            self.logger.error(f"Error loading intents from database: {str(e)}")
-            # Fallback to loading from file if database fails
-            self.load_intents_from_file()
-        finally:
-            if db_session is not None:
-                db_session.close()
-    
-    def load_intents_from_file(self):
-        """Fallback method to load intents from a JSON file"""
-        try:
-            with open(Config.TRAINING_DATA_PATH, 'r') as file:
-                data = json.load(file)
-                
-                for intent in data.get('intents', []):
-                    intent_name = intent.get('tag')
-                    patterns = intent.get('patterns', [])
-                    
-                    self.intents[intent_name] = patterns
-                    self.classes.append(intent_name)
-                    
-                    # Add each pattern to our documents list
-                    for pattern in patterns:
-                        # Tokenize each word in the pattern
-                        w = word_tokenize(pattern.lower())
-                        # Add to our words list
-                        self.words.extend(w)
-                        # Add to our documents list
-                        self.documents.append((w, intent_name))
-                
-                # Lemmatize and remove duplicates
-                self.words = [self.lemmatizer.lemmatize(w.lower()) for w in self.words if w not in self.ignore_words]
-                self.words = sorted(list(set(self.words)))
-                
-        except Exception as e:
-            self.logger.error(f"Error loading intents from file: {str(e)}")
-            # Initialize with default intents if both methods fail
-            self.intents = {
-                'greeting': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening'],
-                'goodbye': ['bye', 'goodbye', 'see you later', 'see you soon', 'have a good day'],
-                'thanks': ['thank you', 'thanks', 'appreciate it', 'thank you so much'],
-                'unknown': ['unknown']
-            }
-            self.classes = list(self.intents.keys())
-    
-    def detect_intent(self, message):
-        """Detect the intent of a message"""
-        try:
-            # Tokenize the message
-            message_words = word_tokenize(message.lower())
-            # Lemmatize each word
-            message_words = [self.lemmatizer.lemmatize(word.lower()) for word in message_words if word not in self.ignore_words]
-            
-            # Check for exact matches first
-            for intent, patterns in self.intents.items():
-                for pattern in patterns:
-                    if message.lower() == pattern.lower():
-                        return intent
-            
-            # If no exact match, check for partial matches
-            best_match = None
-            best_score = 0
-            
-            for intent, patterns in self.intents.items():
-                for pattern in patterns:
-                    pattern_words = word_tokenize(pattern.lower())
-                    pattern_words = [self.lemmatizer.lemmatize(word.lower()) for word in pattern_words if word not in self.ignore_words]
-                    
-                    # Count how many words match
-                    matches = sum(1 for word in message_words if word in pattern_words)
-                    
-                    # Calculate a score based on the percentage of matching words
-                    if len(pattern_words) > 0:
-                        score = matches / len(pattern_words)
-                        
-                        if score > best_score:
-                            best_score = score
-                            best_match = intent
-            
-            # If we have a good match, return it
-            if best_score > 0.5:
-                return best_match
-            
-            # If no good match, return 'unknown'
-            return 'unknown'
-            
-        except Exception as e:
-            self.logger.error(f"Error detecting intent: {str(e)}")
-            return 'unknown'
-    
-    def add_pattern(self, intent, pattern_text):
-        """Add a new pattern for an intent"""
-        if not intent or not pattern_text:
-            return False
+        self.ml_classifier = MLIntentClassifier()
+        self.context_manager = ContextManager()
+        self.confidence_threshold = 0.60
+        self.nlp = None
+        self.training_data = self.load_training_data()
         
-        db_session = None
+        # Try to load spaCy for semantic similarity
         try:
-            db_session = get_db_session()
-            
-            # Check if the intent exists
-            intent_obj = db_session.query(Intent).filter_by(name=intent).first()
-            
-            if not intent_obj:
-                # Create the intent if it doesn't exist
-                intent_obj = Intent(name=intent)
-                db_session.add(intent_obj)
-                db_session.flush()  # Flush to get the ID
-            
-            # Create the pattern
-            pattern = Pattern(intent_id=intent_obj.id, text=pattern_text)
-            db_session.add(pattern)
-            
-            db_session.commit()
-            
-            # Update our local data
-            if intent in self.intents:
-                self.intents[intent].append(pattern_text)
-            else:
-                self.intents[intent] = [pattern_text]
-                self.classes.append(intent)
-            
-            # Update our words and documents
-            w = word_tokenize(pattern_text.lower())
-            self.words.extend(w)
-            self.documents.append((w, intent))
-            
-            # Lemmatize and remove duplicates
-            self.words = [self.lemmatizer.lemmatize(word.lower()) for word in self.words if word not in self.ignore_words]
-            self.words = sorted(list(set(self.words)))
-            
-            return True
-            
+            import spacy
+            try:
+                # Try to load the requested model
+                self.nlp = spacy.load("en_core_web_md")
+                logger.info("spaCy en_core_web_md loaded successfully.")
+            except OSError:
+                logger.warning("spaCy model 'en_core_web_md' not found. Trying 'en_core_web_sm'.")
+                try:
+                    self.nlp = spacy.load("en_core_web_sm")
+                    logger.info("spaCy en_core_web_sm loaded successfully.")
+                except:
+                    logger.warning("spaCy models not found. Will fallback to TF-IDF similarity.")
+                    self.nlp = None
+        except ImportError:
+            logger.warning("spaCy not installed. Will fallback to TF-IDF similarity.")
         except Exception as e:
-            self.logger.error(f"Error adding pattern: {str(e)}")
-            if db_session:
-                db_session.rollback()
-            return False
-            
-        finally:
-            if db_session:
-                db_session.close()
+            logger.warning(f"spaCy init error: {e}")
+            self.nlp = None
+
+    def load_training_data(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path = os.path.join(base_dir, '..', 'data', 'training_data.json')
+        try:
+            with open(data_path, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Failed to load training data: {e}")
+            return {"intents": []}
+
+    def get_semantic_match(self, user_query):
+        """
+        Fallback layer: Uses spaCy embeddings (or TF-IDF) to find best match.
+        """
+        best_score = 0
+        best_intent = None
+        
+        # Option 1: spaCy
+        if self.nlp:
+            try:
+                user_doc = self.nlp(user_query)
+                # Check if vector is valid (not empty/zero)
+                if user_doc.vector_norm == 0:
+                    return None
+                    
+                for intent in self.training_data['intents']:
+                    for pattern in intent['patterns']:
+                        pattern_doc = self.nlp(pattern)
+                        if pattern_doc.vector_norm == 0:
+                            continue
+                            
+                        similarity = user_doc.similarity(pattern_doc)
+                        if similarity > best_score:
+                            best_score = similarity
+                            best_intent = intent['tag']
+            except Exception as e:
+                logger.error(f"spaCy similarity error: {e}")
+
+        # Option 2: TF-IDF Fallback (if spaCy missing or failed to find match)
+        # We only use this if spaCy is missing. If spaCy ran and found nothing, we might trust it.
+        # But if spaCy is missing (self.nlp is None), we use TF-IDF.
+        if not self.nlp and self.ml_classifier.vectorizer:
+            try:
+                # Preprocess
+                processed_query = self.ml_classifier.trainer.preprocess_text(user_query)
+                if processed_query:
+                    user_vec = self.ml_classifier.vectorizer.transform([processed_query])
+                    
+                    for intent in self.training_data['intents']:
+                        for pattern in intent['patterns']:
+                            processed_pattern = self.ml_classifier.trainer.preprocess_text(pattern)
+                            if processed_pattern:
+                                pattern_vec = self.ml_classifier.vectorizer.transform([processed_pattern])
+                                
+                                # Compute cosine similarity
+                                similarity = cosine_similarity(user_vec, pattern_vec)[0][0]
+                                if similarity > best_score:
+                                    best_score = similarity
+                                    best_intent = intent['tag']
+            except Exception as e:
+                logger.error(f"TF-IDF similarity error: {e}")
+
+        # Threshold for semantic match
+        # If using TF-IDF, values might be lower/higher than spaCy. 0.4 is a safe conservative bet.
+        if best_score > 0.4: 
+            return best_intent
+        return None
+
+    def detect_intent(self, user_message, user_id=None):
+        """
+        Hybrid Intent Resolution Flow.
+        Args:
+            user_message (str): The user's input.
+            user_id (str, optional): User ID for context lookup.
+        """
+        # 1. ML Prediction
+        intent, confidence = self.ml_classifier.predict(user_message)
+        logger.info(f"ML Prediction: {intent}, Confidence: {confidence}")
+        
+        final_intent = intent
+        
+        # 2. Fallback if confidence is low
+        if confidence < self.confidence_threshold:
+            logger.info(f"Low confidence ({confidence}). Attempting semantic fallback.")
+            semantic_intent = self.get_semantic_match(user_message)
+            if semantic_intent:
+                final_intent = semantic_intent
+                logger.info(f"Semantic Fallback found: {final_intent}")
+            else:
+                # If no semantic match and confidence is very low, return unknown
+                if confidence < 0.3:
+                     final_intent = 'unknown'
+
+        # 3. Context (Optional usage for resolution)
+        # In a real hybrid system, we would use context to disambiguate here.
+        # For now, we just ensure context is updated later (in processor or explicit call).
+        
+        return final_intent
