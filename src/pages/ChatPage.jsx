@@ -137,6 +137,10 @@ const ChatPage = () => {
 
       const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(data.detail || 'Failed to get response from server');
+      }
+
       // Add bot response to chat
       setTimeout(() => {
         setIsTyping(false);
@@ -145,8 +149,7 @@ const ChatPage = () => {
           text: data.response,
           sender: 'bot',
           timestamp: new Date().toISOString(),
-          category: detectMessageCategory(data.response),
-          category: detectMessageCategory(data.response)
+          category: detectMessageCategory(data.response || '')
         }]);
       }, 500); // Slight delay for typing effect
     } catch (error) {
