@@ -11,6 +11,7 @@ class Settings:
     
     # Security
     SECRET_KEY: str = os.environ.get('SECRET_KEY', 'default-secret-key-for-development')
+    ADMIN_API_KEY: str = os.environ.get('ADMIN_API_KEY', 'super-secret-admin-key')
     
     # Database
     SQLALCHEMY_DATABASE_URI: str = os.environ.get('DATABASE_URL', 'sqlite:///database/chat.db')
