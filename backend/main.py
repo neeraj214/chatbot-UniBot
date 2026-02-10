@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from backend.core.config import settings
-from backend.api import chat, health
+from backend.api import chat, health, admin
 from database.db_handler import init_db
 import logging
 
