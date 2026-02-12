@@ -42,6 +42,7 @@ app.add_middleware(
 
 app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["chat"])
 app.include_router(health.router, prefix=settings.API_V1_STR, tags=["health"])
+app.include_router(admin.router, prefix=settings.API_V1_STR, tags=["admin"])
 
 if __name__ == "__main__":
     import uvicorn
