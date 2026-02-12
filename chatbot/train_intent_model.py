@@ -96,6 +96,12 @@ class IntentModelTrainer:
         
         print("Training completed successfully.")
 
-if __name__ == "__main__":
+def train_model():
+    """
+    Convenience function for triggering training from other modules.
+    """
     trainer = IntentModelTrainer()
     trainer.train()
+
+if __name__ == "__main__":
+    train_model()
