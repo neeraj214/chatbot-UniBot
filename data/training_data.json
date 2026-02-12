@@ -1,187 +1,217 @@
 {
-  "intents": [
-    {
-      "tag": "greeting",
-      "patterns": [
-        "Hello",
-        "Hi",
-        "Hey",
-        "Good morning",
-        "Good afternoon",
-        "Good evening",
-        "Hi there",
-        "Greetings"
-      ],
-      "responses": [
-        "Hello! How can I help you today?",
-        "Hi there! What can I do for you?",
-        "Greetings! How may I assist you?",
-        "Hello! How can I assist you today?",
-        "Hi! What brings you here today?"
-      ]
-    },
-    {
-      "tag": "goodbye",
-      "patterns": [
-        "Bye",
-        "Goodbye",
-        "See you later",
-        "See ya",
-        "Take care",
-        "I'm leaving",
-        "I have to go",
-        "Talk to you later"
-      ],
-      "responses": [
-        "Goodbye! Have a great day!",
-        "See you later! Take care!",
-        "Bye! Come back soon!",
-        "Take care! Let me know if you need anything else.",
-        "Goodbye! It was nice chatting with you."
-      ]
-    },
-    {
-      "tag": "thanks",
-      "patterns": [
-        "Thanks",
-        "Thank you",
-        "Thanks a lot",
-        "I appreciate it",
-        "Thank you so much",
-        "That's helpful"
-      ],
-      "responses": [
-        "You're welcome!",
-        "Happy to help!",
-        "Anytime!",
-        "My pleasure!",
-        "Glad I could assist you!"
-      ]
-    },
-    {
-      "tag": "about",
-      "patterns": [
-        "Who are you",
-        "What are you",
-        "Tell me about yourself",
-        "What is your name",
-        "What can you do",
-        "How do you work"
-      ],
-      "responses": [
-        "I am an AI chatbot designed to assist with various tasks and answer questions.",
-        "I'm your virtual assistant, here to help with information and tasks.",
-        "I'm an AI assistant created to make your life easier!",
-        "I'm a chatbot built to provide helpful responses to your questions.",
-        "I'm an AI-powered assistant that can help you with information and tasks."
-      ]
-    },
-    {
-      "tag": "help",
-      "patterns": [
-        "Help",
-        "I need help",
-        "Can you help me",
-        "What can you help me with",
-        "How can you assist me",
-        "What can you do for me"
-      ],
-      "responses": [
-        "I can help you with information, answer questions, or assist with various tasks. Just let me know what you need!",
-        "I'm here to assist you with any questions or tasks you have. What do you need help with?",
-        "I can provide information, answer questions, or help with specific tasks. How can I assist you today?",
-        "I'm designed to be helpful in many ways. What kind of assistance do you need?",
-        "I can help with a variety of tasks and questions. Just tell me what you're looking for!"
-      ]
-    },
-    {
-      "tag": "weather",
-      "patterns": [
-        "What's the weather like",
-        "How's the weather today",
-        "Is it going to rain",
-        "Weather forecast",
-        "Temperature today"
-      ],
-      "responses": [
-        "I don't have real-time weather data, but I can help you find a weather service that does!",
-        "I can't access current weather information, but I can suggest some weather apps or websites for you.",
-        "I don't have access to weather data at the moment. Would you like me to suggest some resources for checking the weather?",
-        "I'm not connected to weather services, but I can point you to some reliable weather resources if you'd like."
-      ]
-    },
-    {
-      "tag": "time",
-      "patterns": [
-        "What time is it",
-        "Tell me the time",
-        "Current time",
-        "What's the time now"
-      ],
-      "responses": [
-        "The current time is {time}.",
-        "It's {time} right now.",
-        "The time is {time}.",
-        "Right now it's {time}."
-      ]
-    },
-    {
-      "tag": "date",
-      "patterns": [
-        "What's today's date",
-        "What day is it today",
-        "Tell me the date",
-        "Current date"
-      ],
-      "responses": [
-        "Today's date is {date}.",
-        "It's {date} today.",
-        "The date today is {date}.",
-        "Today is {date}."
-      ]
-    },
-    {
-      "tag": "jokes",
-      "patterns": [
-        "Tell me a joke",
-        "Say something funny",
-        "Do you know any jokes",
-        "Make me laugh"
-      ],
-      "responses": [
-        "Why don't scientists trust atoms? Because they make up everything!",
-        "What did the ocean say to the beach? Nothing, it just waved!",
-        "Why did the scarecrow win an award? Because he was outstanding in his field!",
-        "How does a penguin build its house? Igloos it together!",
-        "Why don't eggs tell jokes? They'd crack each other up!",
-        "What do you call a fake noodle? An impasta!"
-      ]
-    },
-    {
-      "tag": "name",
-      "patterns": [
-        "What's your name",
-        "What should I call you",
-        "Do you have a name",
-        "Who am I talking to"
-      ],
-      "responses": [
-        "You can call me AI Assistant. What's your name?",
-        "I'm AI Assistant, your friendly chatbot. What would you like me to call you?",
-        "My name is AI Assistant. I'm here to help you!",
-        "I'm AI Assistant. It's nice to meet you!"
-      ]
-    },
-    {
-      "tag": "unknown",
-      "patterns": [],
-      "responses": [
-        "I'm not sure I understand. Could you rephrase that?",
-        "I don't have information about that. Could you try asking something else?",
-        "I'm still learning and don't know how to respond to that yet.",
-        "I'm not sure how to help with that. Could you try asking in a different way?",
-        "I don't understand that query. Could you provide more details or ask something else?"
-      ]
-    }
-  ]
+    "intents": [
+        {
+            "tag": "greeting",
+            "patterns": [
+                "Hello",
+                "Hi",
+                "Hey",
+                "Good morning",
+                "Good afternoon",
+                "Good evening",
+                "Hi there",
+                "Greetings"
+            ],
+            "responses": [
+                "Hello! How can I help you today?",
+                "Hi there! What can I do for you?",
+                "Greetings! How may I assist you?",
+                "Hello! How can I assist you today?",
+                "Hi! What brings you here today?"
+            ]
+        },
+        {
+            "tag": "goodbye",
+            "patterns": [
+                "Bye",
+                "Goodbye",
+                "See you later",
+                "See ya",
+                "Take care",
+                "I'm leaving",
+                "I have to go",
+                "Talk to you later"
+            ],
+            "responses": [
+                "Goodbye! Have a great day!",
+                "See you later! Take care!",
+                "Bye! Come back soon!",
+                "Take care! Let me know if you need anything else.",
+                "Goodbye! It was nice chatting with you."
+            ]
+        },
+        {
+            "tag": "thanks",
+            "patterns": [
+                "Thanks",
+                "Thank you",
+                "Thanks a lot",
+                "I appreciate it",
+                "Thank you so much",
+                "That's helpful"
+            ],
+            "responses": [
+                "You're welcome!",
+                "Happy to help!",
+                "Anytime!",
+                "My pleasure!",
+                "Glad I could assist you!"
+            ]
+        },
+        {
+            "tag": "about",
+            "patterns": [
+                "Who are you",
+                "What are you",
+                "Tell me about yourself",
+                "What is your name",
+                "What can you do",
+                "How do you work"
+            ],
+            "responses": [
+                "I am an AI chatbot designed to assist with various tasks and answer questions.",
+                "I'm your virtual assistant, here to help with information and tasks.",
+                "I'm an AI assistant created to make your life easier!",
+                "I'm a chatbot built to provide helpful responses to your questions.",
+                "I'm an AI-powered assistant that can help you with information and tasks."
+            ]
+        },
+        {
+            "tag": "help",
+            "patterns": [
+                "Help",
+                "I need help",
+                "Can you help me",
+                "What can you help me with",
+                "How can you assist me",
+                "What can you do for me"
+            ],
+            "responses": [
+                "I can help you with information, answer questions, or assist with various tasks. Just let me know what you need!",
+                "I'm here to assist you with any questions or tasks you have. What do you need help with?",
+                "I can provide information, answer questions, or help with specific tasks. How can I assist you today?",
+                "I'm designed to be helpful in many ways. What kind of assistance do you need?",
+                "I can help with a variety of tasks and questions. Just tell me what you're looking for!"
+            ]
+        },
+        {
+            "tag": "weather",
+            "patterns": [
+                "What's the weather like",
+                "How's the weather today",
+                "Is it going to rain",
+                "Weather forecast",
+                "Temperature today"
+            ],
+            "responses": [
+                "I don't have real-time weather data, but I can help you find a weather service that does!",
+                "I can't access current weather information, but I can suggest some weather apps or websites for you.",
+                "I don't have access to weather data at the moment. Would you like me to suggest some resources for checking the weather?",
+                "I'm not connected to weather services, but I can point you to some reliable weather resources if you'd like."
+            ]
+        },
+        {
+            "tag": "time",
+            "patterns": [
+                "What time is it",
+                "Tell me the time",
+                "Current time",
+                "What's the time now"
+            ],
+            "responses": [
+                "The current time is {time}.",
+                "It's {time} right now.",
+                "The time is {time}.",
+                "Right now it's {time}."
+            ]
+        },
+        {
+            "tag": "date",
+            "patterns": [
+                "What's today's date",
+                "What day is it today",
+                "Tell me the date",
+                "Current date"
+            ],
+            "responses": [
+                "Today's date is {date}.",
+                "It's {date} today.",
+                "The date today is {date}.",
+                "Today is {date}."
+            ]
+        },
+        {
+            "tag": "jokes",
+            "patterns": [
+                "Tell me a joke",
+                "Say something funny",
+                "Do you know any jokes",
+                "Make me laugh"
+            ],
+            "responses": [
+                "Why don't scientists trust atoms? Because they make up everything!",
+                "What did the ocean say to the beach? Nothing, it just waved!",
+                "Why did the scarecrow win an award? Because he was outstanding in his field!",
+                "How does a penguin build its house? Igloos it together!",
+                "Why don't eggs tell jokes? They'd crack each other up!",
+                "What do you call a fake noodle? An impasta!"
+            ]
+        },
+        {
+            "tag": "name",
+            "patterns": [
+                "What's your name",
+                "What should I call you",
+                "Do you have a name",
+                "Who am I talking to"
+            ],
+            "responses": [
+                "You can call me AI Assistant. What's your name?",
+                "I'm AI Assistant, your friendly chatbot. What would you like me to call you?",
+                "My name is AI Assistant. I'm here to help you!",
+                "I'm AI Assistant. It's nice to meet you!"
+            ]
+        },
+        {
+            "tag": "unknown",
+            "patterns": [],
+            "responses": [
+                "I'm not sure I understand. Could you rephrase that?",
+                "I don't have information about that. Could you try asking something else?",
+                "I'm still learning and don't know how to respond to that yet.",
+                "I'm not sure how to help with that. Could you try asking in a different way?",
+                "I don't understand that query. Could you provide more details or ask something else?"
+            ]
+        },
+        {
+            "tag": "test_tag",
+            "patterns": [
+                "test pattern 1",
+                "test pattern 2"
+            ],
+            "responses": [
+                "test response 1"
+            ]
+        },
+        {
+            "tag": "test_tag_46",
+            "patterns": [
+                "test pattern 1",
+                "test pattern 2"
+            ],
+            "responses": [
+                "test response 1"
+            ]
+        },
+        {
+            "tag": "test_tag_104",
+            "patterns": [
+                "test pattern 1",
+                "test pattern 2"
+            ],
+            "responses": [
+                "test response 1"
+            ]
+        }
+    ]
 }
