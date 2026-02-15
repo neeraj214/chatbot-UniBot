@@ -27,14 +27,7 @@ const ModernChatPage = () => {
   const speechSynthesisRef = useRef(null);
 
   // Quick reply suggestions
-  const suggestions = [
-    'Tell me about the university',
-    'How do I register for classes?',
-    'What are the library hours?',
-    'When is the next campus event?',
-    'How do I contact student services?',
-    'What dining options are available?'
-  ];
+  const suggestions = [];
 
   // Initialize speech recognition
   useEffect(() => {
