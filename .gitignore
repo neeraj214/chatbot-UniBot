@@ -36,6 +36,10 @@ venv.bak/
 # Logs
 *.log
 
+# Chatbot model artifacts
+chatbot/model/intent_classifier_*.pkl
+chatbot/model/tfidf_vectorizer_*.pkl
+
 # Node
 node_modules/
 npm-debug.log

@@ -115,6 +115,16 @@ class IntentHandler:
             user_message (str): The user's input.
             user_id (str, optional): User ID for context lookup.
         """
+        normalized = (user_message or "").lower().strip()
+        keyword_intents = {
+            "who are you": "about",
+            "what is your name": "about",
+            "tell me about yourself": "about",
+        }
+        for phrase, tag in keyword_intents.items():
+            if phrase in normalized:
+                return tag
+
         # 1. ML Prediction
         intent, confidence = self.ml_classifier.predict(user_message)
         logger.info(f"ML Prediction: {intent}, Confidence: {confidence}")
@@ -129,9 +139,8 @@ class IntentHandler:
                 final_intent = semantic_intent
                 logger.info(f"Semantic Fallback found: {final_intent}")
             else:
-                # If no semantic match and confidence is very low, return unknown
-                if confidence < 0.3:
-                     final_intent = 'unknown'
+                if confidence < 0.3 and intent is None:
+                    final_intent = 'unknown'
 
         # 3. Context (Optional usage for resolution)
         # In a real hybrid system, we would use context to disambiguate here.

@@ -30,12 +30,9 @@ class ChatProcessor:
             dict: A dictionary containing the bot's response and metadata
         """
         try:
-            # Preprocess the user message
             processed_message = preprocess_text(user_message)
-            
-            # Determine the intent of the message
-            # Modified to pass user_id for context-aware resolution
-            intent = self.intent_handler.detect_intent(processed_message, user_id)
+
+            intent = self.intent_handler.detect_intent(user_message, user_id)
             self.logger.info(f"Detected intent: {intent}")
             
             # Generate a response based on the intent

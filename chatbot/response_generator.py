@@ -15,53 +15,55 @@ class ResponseGenerator:
         self.load_responses()
     
     def load_responses(self):
-        """Load responses from the database"""
         db_session = None
         try:
-            # Get all intents from the database
             db_session = get_db_session()
             if not db_session:
                 raise Exception("Failed to create database session")
-                
+
             intents = db_session.query(Intent).all()
-            
+            self.responses = {}
+
             for intent in intents:
-                # Get responses for this intent
                 responses = get_intent_responses(intent.id)
                 response_texts = [response.text for response in responses]
-                
-                # Add to our responses dictionary
+
                 self.responses[intent.name] = response_texts
-                
+
+            self._merge_file_responses()
+
         except Exception as e:
             print(f"Error loading responses from database: {str(e)}")
-            # Fallback to loading from file if database fails
-            self.load_responses_from_file()
+            self.responses = {}
+            self._merge_file_responses()
         finally:
             if db_session is not None:
                 db_session.close()
     
-    def load_responses_from_file(self):
-        """Fallback method to load responses from a JSON file"""
+    def _merge_file_responses(self):
         try:
             with open(Config.TRAINING_DATA_PATH, 'r') as file:
                 data = json.load(file)
-                
+
                 for intent in data.get('intents', []):
                     intent_name = intent.get('tag')
                     responses = intent.get('responses', [])
-                    
-                    self.responses[intent_name] = responses
-                    
+
+                    if not intent_name:
+                        continue
+
+                    if intent_name not in self.responses or not self.responses[intent_name]:
+                        self.responses[intent_name] = responses
+
         except Exception as e:
             print(f"Error loading responses from file: {str(e)}")
-            # Initialize with default responses if both methods fail
-            self.responses = {
-                'greeting': ['Hello! How can I help you today?', 'Hi there!'],
-                'goodbye': ['Goodbye!', 'See you later!'],
-                'thanks': ['You\'re welcome!', 'Happy to help!'],
-                'unknown': [self.default_response]
-            }
+            if not self.responses:
+                self.responses = {
+                    'greeting': ['Hello! How can I help you today?', 'Hi there!'],
+                    'goodbye': ['Goodbye!', 'See you later!'],
+                    'thanks': ['You\'re welcome!', 'Happy to help!'],
+                    'unknown': [self.default_response]
+                }
     
     def generate_response(self, intent, context=None):
         """Generate a response based on the intent and context"""
