@@ -1,0 +1,48 @@
+name: Gitty up! Achievement
+
+on:
+  issues:
+    types: [closed]
+  pull_request:
+    types: [closed]
+
+jobs:
+  check-achievement:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Calculate closure time and comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload;
+            const item = payload.issue || payload.pull_request;
+            
+            if (!item) {
+              console.log('No issue or pull request found in payload');
+              return;
+            }
+
+            // Calculate time difference in minutes
+            const created = new Date(item.created_at);
+            const closed = new Date(item.closed_at);
+            const diffInMs = closed - created;
+            const diffInMinutes = diffInMs / (1000 * 60);
+
+            console.log(`Item #${item.number} closed in ${diffInMinutes.toFixed(2)} minutes.`);
+
+            // Achievement logic: 5 minutes or less
+            if (diffInMinutes <= 5) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: item.number,
+                body: '🤠 **Yee-haw! Gitty up!** You just unlocked a custom achievement by closing this within 5 minutes of opening it. Lightning fast!'
+              });
+              console.log('Achievement unlocked! Comment posted successfully.');
+            } else {
+              console.log('Closure time exceeded 5 minutes. No achievement unlocked.');
+            }
