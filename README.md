@@ -142,6 +142,11 @@ Unlock the full potential of UniBot with the integrated dashboard:
 *   [ ] **Deployment**: Docker support and cloud deployment guides (AWS/Heroku).
 
 ---
+---
+
+*   [ ] the chat bot is status is currently working
+
+
 
 ## 🤝 Contributing
 
